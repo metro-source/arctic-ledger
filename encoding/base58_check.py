@@ -1,12 +1,17 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from math import ceil
+
+import hashlib
 import binascii
 
 class Base58CheckAddress(object):
-    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     VERSION_BYTE = bytes([0])
     
     def __init__(self, public_key = None):
+        self.ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+        self.MAP = { self.ALPHABET[i]: i for i in range(len(self.ALPHABET)) }
+
         """
         Where public key is an instance of ec.EllipticCurvePublicKey
         """
@@ -14,11 +19,11 @@ class Base58CheckAddress(object):
         self.payload_str = None
 
         if public_key:
-            self.load_public_key(load_public_key)
+            self.load_public_key(public_key)
 
         self.ripemd_hash = None
     
-    def load_public_key(self, public_key)
+    def load_public_key(self, public_key):
         self.payload_bin = public_key.public_numbers().encode_point()
         self.payload_str = binascii.hexlify(self.payload_bin)
 
@@ -29,10 +34,10 @@ class Base58CheckAddress(object):
     def hash_ripemd(self, payload: bytes):
         sha256 = self.hash_sha256(payload)
 
-        ripemd = hashes.Hash(hashes.RIPEMD160(), backend=default_backend())
+        ripemd = hashlib.new('ripemd160')
         ripemd.update(sha256)
 
-        return ripemd.finalize()
+        return ripemd.digest()
 
     def hash_sha256(self, payload: bytes):
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -70,4 +75,32 @@ class Base58CheckAddress(object):
             address += self.ALPHABET[0]
 
         return address[::-1]
+
+    def decode_base58(self, payload: str):
+        bignum = 0
+        payload = payload[::-1]
+
+        i = 0
+        while True:
+            rem = self.MAP[payload[i]]
+            bignum += (58**i) * rem
+            i += 1
+
+            if i == len(payload):
+                break
+
+        zeros = 0
+        for c in payload:
+            if c == self.ALPHABET[0]:
+                zeros += 1
+        
+        n_bytes = ceil(bignum.bit_length()/8)
+        bignum_bytes = bignum.to_bytes(n_bytes, 'big')
+
+        result = (bytes(zeros) + bignum_bytes)
+
+        return binascii.hexlify(result)
+
+
+
 

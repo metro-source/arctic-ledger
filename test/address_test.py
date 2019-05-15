@@ -16,6 +16,12 @@ class AddressTest(unittest.TestCase):
 
         addr = Base58CheckAddress(btc.public_key).address_string()
 
-        self.assertIsNotNone(addr)
-        self.assertIsInstance(addr, str)
         self.assertEqual("16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM", addr)
+
+    def test_bitcoin_decode(self):
+        addr = "16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM"
+        addr_bin = b'00010966776006953d5567439e5e39f86a0d273beed61967f6'
+
+        btc = Base58CheckAddress()
+
+        self.assertEqual(btc.decode_base58(addr), addr_bin)
