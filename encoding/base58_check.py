@@ -90,16 +90,18 @@ class Base58CheckAddress(object):
                 break
 
         zeros = 0
-        for c in payload:
+        for c in payload[::-1]:
             if c == self.ALPHABET[0]:
                 zeros += 1
+            else:
+                break
         
         n_bytes = ceil(bignum.bit_length()/8)
         bignum_bytes = bignum.to_bytes(n_bytes, 'big')
 
         result = (bytes(zeros) + bignum_bytes)
 
-        return binascii.hexlify(result)
+        return result
 
 
 
