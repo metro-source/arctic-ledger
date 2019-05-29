@@ -11,7 +11,7 @@ class CashaddrTest(unittest.TestCase):
         """
         Polymod should return 0
         """
-        cashaddr = "bitcoincash:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a"
+        cashaddr = "bitcoincash:qqjsprfudecxwurfswv0sjvvt8lhxf6zqvapsewce9"
         addr = Cashaddr()
         
         payload =  addr.lower_prefix_bits() + [0] + addr.reverse_map(cashaddr.split(":")[1])

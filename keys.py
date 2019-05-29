@@ -1,5 +1,7 @@
 ##
 # Key generation happens here
+import binascii
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -52,4 +54,9 @@ class BitcoinKeys(Keys):
         self.public_key = self.private_key.public_key()
 
     def public_key_hash(self):
-        pass
+        point = self.public_key.public_numbers().encode_point()
+
+        return binascii.hexlify(point)
+
+    def private_key_hash(self):
+        return "%x" % self.private_key.private_numbers().private_value
