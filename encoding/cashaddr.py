@@ -4,6 +4,7 @@ Based on https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cash
 """
 from enum import Enum
 from encoding.byte_conversion import to_n_bits
+from encoding.base58_check import Base58CheckAddress
 
 class AddressType(Enum):
     P2KH = 0
@@ -12,8 +13,8 @@ class AddressType(Enum):
 class InvalidHashSize(Exception):
     pass
 
-class Cashaddr(object):
-    def __init__(self):
+class Cashaddr(Base58CheckAddress, object):
+    def __init__(self, public_key = None):
         self.ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
         self.map = { c: i for i,c in enumerate(self.ALPHABET)}
         self.prefix = "bitcoincash"
@@ -32,6 +33,9 @@ class Cashaddr(object):
         The hash representing the data
         """
         self.hash = None
+
+        if public_key:
+            self.set_public_key(public_key)
 
     def lower_prefix_bits(self):
         """
@@ -111,4 +115,9 @@ class Cashaddr(object):
                 c ^= 0x1e4f43e470
 
         return c ^ 1
+
+    def set_public_key(self, public_key):
+        pkey_bytes = public_key.public_numbers().encode_point()
+
+        self.hash = self.hash_ripemd(pkey_bytes)
 
