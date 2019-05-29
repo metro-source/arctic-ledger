@@ -1,6 +1,6 @@
 # Arctic Ledger
 
-A set of tools for working with cryptocurrencies in Python
+A set of tools for working with cryptocurrencies in Python 
 
 **Supported cryptos:**
 - Bitcoin (Basic, no segwit or P2SH support yet)
@@ -17,7 +17,16 @@ A set of tools for working with cryptocurrencies in Python
 
 ## Future Features
 ---
-    - HD Wallet support
+- HD Wallet support
+
+## Setup
+---
+
+Install pip requirements, python3 is required
+
+```bash
+pip3 install -r requirements.txt
+```
 
 ## Examples
 
